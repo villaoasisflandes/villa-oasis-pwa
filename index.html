@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a1628">
+  <title>Villa Oasis</title>
+  <link rel="manifest" href="/manifest.json">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a1628 100%);
+      min-height: 100vh;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container { width: 100%; max-width: 400px; }
+
+    /* ── Login ── */
+    .login-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 40px 32px;
+      text-align: center;
+      backdrop-filter: blur(20px);
+    }
+
+    .logo { font-size: 56px; margin-bottom: 16px; }
+
+    .login-card h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #64b5f6, #29b6f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .login-card p {
+      color: rgba(255,255,255,0.5);
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px 20px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 14px;
+      color: white;
+      font-size: 18px;
+      text-align: center;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      outline: none;
+      margin-bottom: 16px;
+      transition: border-color 0.3s;
+    }
+
+    input::placeholder {
+      letter-spacing: 2px;
+      text-transform: none;
+      color: rgba(255,255,255,0.3);
+      font-size: 14px;
+    }
+
+    input:focus { border-color: #29b6f6; }
+
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #1565c0, #0288d1);
+      border: none;
+      border-radius: 14px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(2,136,209,0.4); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .error-msg {
+      background: rgba(244,67,54,0.15);
+      border: 1px solid rgba(244,67,54,0.3);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 13px;
+      color: #ef9a9a;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ── Dashboard ── */
+    .dashboard { display: none; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .welcome {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .checkout-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 12px;
+      margin-top: 24px;
+    }
+
+    /* ── Device Card ── */
+    .device-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.3s;
+    }
+
+    .device-card.on {
+      background: rgba(41,182,246,0.1);
+      border-color: rgba(41,182,246,0.3);
+    }
+
+    .device-info { display: flex; align-items: center; gap: 14px; }
+
+    .device-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .device-card.on .device-icon {
+      background: rgba(41,182,246,0.2);
+    }
+
+    .device-name {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .device-status {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .device-card.on .device-status { color: #29b6f6; }
+
+    /* ── Toggle ── */
+    .toggle {
+      width: 52px;
+      height: 28px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+      outline: none;
+      flex-shrink: 0;
+    }
+
+    .toggle.on { background: #0288d1; }
+    .toggle.loading { opacity: 0.5; cursor: not-allowed; }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.3s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .toggle.on::after { transform: translateX(24px); }
+
+    /* ── Asistencia ── */
+    .btn-help {
+      width: 100%;
+      padding: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      color: white;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn-help:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .btn-logout {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.3);
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: color 0.3s;
+    }
+
+    .btn-logout:hover { color: rgba(255,255,255,0.6); }
+
+    /* ── Loading spinner ── */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="container">
+  <div class="login-card" id="loginView">
+    <div class="logo">🌊</div>
+    <h1>Villa Oasis</h1>
+    <p>Ingresa tu código de reserva para continuar</p>
+    <input 
+      type="text" 
+      id="codigoInput" 
+      placeholder="Ej: VA-001"
+      maxlength="20"
+    />
+    <button class="btn-primary" id="btnLogin" onclick="verificarReserva()">
+      Ingresar
+    </button>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dashboard" id="dashboardView">
+    <div class="header">
+      <div class="logo">🌊</div>
+      <div class="welcome">Hola, <span id="nombreHuesped"></span> 👋</div>
+      <div style="margin-top: 8px;">
+        <span class="checkout-badge">
+          🗓 Check-out: <span id="checkoutDate"></span>
+        </span>
+      </div>
+    </div>
+
+    <div class="section-title">Piscina</div>
+
+    <!-- Luces piscina -->
+    <div class="device-card" id="cardLuces">
+      <div class="device-info">
+        <div class="device-icon">💡</div>
+        <div>
+          <div class="device-name">Luces piscina</div>
+          <div class="device-status" id="statusLuces">Consultando...</div>
+        </div>
+      </div>
+      <button class="toggle" id="toggleLuces" onclick="toggleDevice('luces')"></button>
+    </div>
+
+    <div class="section-title">Soporte</div>
+
+    <button class="btn-help" onclick="solicitarAsistencia()">
+      🆘 Solicitar asistencia
+    </button>
+
+    <button class="btn-logout" onclick="cerrarSesion()">
+      Cerrar sesión
+    </button>
+  </div>
+</div>
+
+<script>
+  const PIPEDREAM_URL = "TU_URL_DE_PIPEDREAM_AQUI";
+  const AUTH_HEADER   = "Bearer VillaOasis@Flandes#2024";
+
+  // ── Estado de la sesión ──────────────────────────────
+  let sesion = JSON.parse(sessionStorage.getItem('villa_sesion') || 'null');
+
+  if (sesion) mostrarDashboard(sesion);
+
+  // ── Verificar reserva ────────────────────────────────
+  async function verificarReserva() {
+    const codigo = document.getElementById('codigoInput').value.trim().toUpperCase();
+    if (!codigo) return;
+
+    const btn = document.getElementById('btnLogin');
+    const err = document.getElementById('errorMsg');
+    
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
+    err.style.display = 'none';
+
+    try {
+      const res = await fetch(PIPEDREAM_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': AUTH_HEADER
+        },
+        body: JSON.stringify({ action: 'verify_reservation', codigo })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        const sesionData = {
+          nombre:    data.nombre.trim(),
+          check_in:  data.check_in,
+          check_out: data.check_out,
+          codigo
+        };
+        sessionStorage.setItem('villa_sesion', JSON.stringify(sesionData));
+        mostrarDashboard(sesionData);
+      } else {
+        mostrarError('Código no válido o reserva inactiva ❌');
+      }
+    } catch (e) {
+      mostrarError('Error de conexión. Intenta de nuevo.');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = 'Ingresar';
+  }
+
+  // ── Mostrar dashboard ────────────────────────────────
+  function mostrarDashboard(data) {
+    document.getElementById('loginView').style.display    = 'none';
+    document.getElementById('dashboardView').style.display = 'block';
+    document.getElementById('nombreHuesped').textContent  = data.nombre;
+    
+    // Formatear fecha check-out
+    const fecha = new Date(data.check_out + 'T12:00:00');
+    document.getElementById('checkoutDate').textContent = 
+      fecha.toLocaleDateString('es-CO', { day: 'numeric', month: 'long' });
+
+    consultarEstados();
+  }
+
+  // ── Consultar estado de dispositivos ────────────────
+  async function consultarEstados() {
+    consultarEstadoLuces();
+  }
+
+  async function consultarEstadoLuces() {
+    try {
+      const res = await fetch(PIPEDREAM_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': AUTH_HEADER
+        },
+        body: JSON.stringify({ action: 'status' })
+      });
+      const data = await res.json();
+      actualizarUI('luces', data.is_on);
+    } catch (e) {
+      document.getElementById('statusLuces').textContent = 'Sin conexión';
+    }
+  }
+
+  // ── Toggle dispositivo ───────────────────────────────
+  async function toggleDevice(device) {
+    const toggle   = document.getElementById(`toggle${capitalize(device)}`);
+    const isOn     = toggle.classList.contains('on');
+    const nuevoVal = !isOn;
+
+    toggle.classList.add('loading');
+
+    try {
+      const res = await fetch(PIPEDREAM_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': AUTH_HEADER
+        },
+        body: JSON.stringify({
+          action:  'command',
+          command: nuevoVal.toString(),
+          device
+        })
+      });
+      const data = await res.json();
+      if (data.success) actualizarUI(device, nuevoVal);
+    } catch (e) {
+      console.error('Error toggling device');
+    }
+
+    toggle.classList.remove('loading');
+  }
+
+  // ── Actualizar UI ────────────────────────────────────
+  function actualizarUI(device, isOn) {
+    const card   = document.getElementById(`card${capitalize(device)}`);
+    const toggle = document.getElementById(`toggle${capitalize(device)}`);
+    const status = document.getElementById(`status${capitalize(device)}`);
+
+    if (isOn) {
+      card.classList.add('on');
+      toggle.classList.add('on');
+      status.textContent = 'Encendidas';
+    } else {
+      card.classList.remove('on');
+      toggle.classList.remove('on');
+      status.textContent = 'Apagadas';
+    }
+  }
+
+  // ── Solicitar asistencia ─────────────────────────────
+  function solicitarAsistencia() {
+    window.open('https://wa.me/573106994844?text=Hola,%20necesito%20asistencia%20en%20Villa%20Oasis', '_blank');
+  }
+
+  // ── Cerrar sesión ────────────────────────────────────
+  function cerrarSesion() {
+    sessionStorage.removeItem('villa_sesion');
+    location.reload();
+  }
+
+  // ── Helpers ──────────────────────────────────────────
+  function mostrarError(msg) {
+    const err = document.getElementById('errorMsg');
+    err.textContent = msg;
+    err.style.display = 'block';
+  }
+
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  // ── Enter en el input ────────────────────────────────
+  document.getElementById('codigoInput')
+    .addEventListener('keypress', e => {
+      if (e.key === 'Enter') verificarReserva();
+    });
+
+  // ── Registrar Service Worker ─────────────────────────
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+  }
+</script>
+</body>
+</html>
